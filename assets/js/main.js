@@ -106,7 +106,7 @@
     { t: 'Wall squat hold', s: 'Isometric', b: 24, l: 85 },
   ];
   const plot = $('[data-chart]');
-  const tip = $('.chart__tip');
+  const tip = plot && $('.chart__tip', plot.closest('.chart'));
   const MAX = 180;
   if (plot) {
     const ticks = [0, 60, 120, 180];
@@ -148,6 +148,45 @@
       row.addEventListener('pointerleave', hideTip);
       row.addEventListener('focus', () => showTip(row));
       row.addEventListener('blur', hideTip);
+    });
+  }
+
+  /* ---------------- Four-week outcomes chart ---------------- */
+  const weeks = [
+    { w: 'Week 1', v: [0.5, 1, 1.2] },
+    { w: 'Week 2', v: [2.5, 2.7, 3.4] },
+    { w: 'Week 3', v: [8, 5, 7.3] },
+    { w: 'Week 4', v: [9, 7, 7.3] },
+  ];
+  const series = ['Energy', 'Strength', 'Endurance'];
+  const wk = $('[data-weeks]');
+  if (wk) {
+    const grid = `<div class="wk__grid" aria-hidden="true">${[0, 2, 4, 6, 8, 10].map(t => `<span style="bottom:${t * 10}%"><b>${t}</b></span>`).join('')}</div>`;
+    const groups = weeks.map((d, gi) => `<div class="wk__g" tabindex="0" data-i="${gi}" aria-label="${d.w}: ${series.map((n, i) => `${n} ${d.v[i]}`).join(', ')}">
+        <div class="wk__bars" aria-hidden="true">${d.v.map((v, i) => `<i class="wk__bar wk__bar--s${i + 1}" style="--h:${v * 10}%">${gi === weeks.length - 1 ? `<b>${v}</b>` : ''}</i>`).join('')}</div>
+        <span class="wk__x" aria-hidden="true">${d.w}</span>
+      </div>`).join('');
+    wk.innerHTML = grid + `<div class="wk__groups">${groups}</div>`;
+
+    const fig = wk.closest('.chart');
+    const wTip = $('.chart__tip', fig);
+    const show = (g) => {
+      const d = weeks[g.dataset.i];
+      wTip.innerHTML = `<strong>${d.w}</strong>` + series.map((n, i) => `<div><span class="sw sw--s${i + 1}"></span><span>${n}</span><span>${d.v[i]} / 10</span></div>`).join('');
+      const f = fig.getBoundingClientRect(), r = g.getBoundingClientRect();
+      const tw = wTip.offsetWidth || 190;
+      wTip.style.left = Math.max(12, Math.min(r.left - f.left + r.width / 2 - tw / 2, f.width - tw - 12)) + 'px';
+      wTip.style.top = (r.top - f.top + 8) + 'px';
+      wTip.classList.add('is-on');
+      wk.classList.add('is-hovering');
+      $$('.wk__g', wk).forEach(x => x.classList.toggle('is-on', x === g));
+    };
+    const hide = () => { wTip.classList.remove('is-on'); wk.classList.remove('is-hovering'); };
+    $$('.wk__g', wk).forEach(g => {
+      g.addEventListener('pointerenter', () => show(g));
+      g.addEventListener('pointerleave', hide);
+      g.addEventListener('focus', () => show(g));
+      g.addEventListener('blur', hide);
     });
   }
 
@@ -208,7 +247,42 @@
     }));
     $('.lightbox__close', lb).addEventListener('click', () => lb.close());
     lb.addEventListener('click', e => { if (e.target === lb) lb.close(); });
-    lb.addEventListener('close', () => lenis?.start());
+    lb.addEventListener('close', () => { if (!$('.case-modal[open]')) lenis?.start(); });
+  }
+
+  /* ---------------- Client case-study panels ---------------- */
+  let playCase = () => {};
+  const lockPage = (on) => {
+    document.documentElement.style.overflow = on ? 'hidden' : '';
+    if (lenis) on ? lenis.stop() : lenis.start();
+  };
+  $$('.case-modal').forEach(dlg => {
+    if (typeof dlg.showModal !== 'function') return;
+    const close = () => {
+      if (!dlg.open || dlg.classList.contains('is-closing')) return;
+      if (reduce) return dlg.close();
+      dlg.classList.add('is-closing');
+      setTimeout(() => { dlg.classList.remove('is-closing'); dlg.close(); }, 340);
+    };
+    dlg.addEventListener('cancel', e => { e.preventDefault(); close(); });
+    dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
+    $$('[data-case-close]', dlg).forEach(b => b.addEventListener('click', close));
+    dlg.addEventListener('close', () => { lockPage(false); history.replaceState(null, '', '#results'); });
+  });
+  const openCase = (id) => {
+    const dlg = document.getElementById(id);
+    if (!dlg || typeof dlg.showModal !== 'function' || dlg.open) return;
+    dlg.showModal();
+    dlg.scrollTop = 0;
+    lockPage(true);
+    history.replaceState(null, '', '#' + id);
+    playCase(dlg);
+  };
+  $$('[data-case-open]').forEach(b => b.addEventListener('click', () => openCase(b.dataset.caseOpen)));
+  /* deep link, e.g. /#case-jaleel opens that case study */
+  const deep = location.hash.slice(1);
+  if (deep && document.getElementById(deep)?.classList.contains('case-modal')) {
+    setTimeout(() => openCase(deep), hasGSAP && !reduce ? 2600 : 0);
   }
 
   /* ======================================================================
@@ -353,7 +427,6 @@
     gsap.fromTo(im, { scale: 1.2 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: fig, start: 'top 95%', end: 'top 40%', scrub: true } });
   });
   gsap.from('.pillars li', { y: 30, autoAlpha: 0, duration: .8, stagger: .1, ease: 'power3.out', scrollTrigger: { trigger: '.pillars', start: 'top 90%', once: true } });
-  gsap.from('.signature', { clipPath: 'inset(0 100% 0 0)', duration: 1.6, ease: 'power2.inOut', scrollTrigger: { trigger: '.signature', start: 'top 92%', once: true } });
 
   /* ---------------- Training cards ---------------- */
   $$('.mode').forEach((card, i) => {
@@ -372,24 +445,25 @@
     ScrollTrigger.create({ trigger: step, start: 'top 62%', end: 'bottom 38%', toggleClass: 'is-active' });
   });
 
-  /* ---------------- Results ---------------- */
-  $$('[data-counter]').forEach(el => {
-    const end = parseFloat(el.dataset.counter);
-    const dec = parseInt(el.dataset.dec || '0', 10);
-    const o = { v: 0 };
-    gsap.to(o, {
-      v: end, duration: 2, ease: 'power3.out',
-      onUpdate: () => (el.textContent = o.v.toFixed(dec)),
-      scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+  /* ---------------- Outcomes ---------------- */
+  gsap.from('.gains li', { y: 24, autoAlpha: 0, duration: .8, stagger: .06, ease: 'power3.out', scrollTrigger: { trigger: '.gains', start: 'top 88%', once: true } });
+  gsap.from('.chart--weeks', { y: 50, autoAlpha: 0, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: '.chart--weeks', start: 'top 88%', once: true } });
+  gsap.from('.wk__bar', { scaleY: 0, duration: 1.2, stagger: .05, ease: 'expo.out', scrollTrigger: { trigger: '.wk', start: 'top 80%', once: true } });
+
+  /* ---------------- Client profiles & case study ---------------- */
+  gsap.from('.profile', { y: 60, autoAlpha: 0, duration: 1.1, stagger: .1, ease: 'expo.out', scrollTrigger: { trigger: '.profiles', start: 'top 85%', once: true } });
+  playCase = (dlg) => {
+    $$('[data-counter]', dlg).forEach(el => {
+      const end = parseFloat(el.dataset.counter);
+      const dec = parseInt(el.dataset.dec || '0', 10);
+      const o = { v: 0 };
+      el.textContent = o.v.toFixed(dec);
+      gsap.to(o, { v: end, duration: 1.8, delay: .3, ease: 'power3.out', onUpdate: () => (el.textContent = o.v.toFixed(dec)) });
     });
-  });
-  gsap.from('.kpi', { y: 40, autoAlpha: 0, duration: 1, stagger: .1, ease: 'expo.out', scrollTrigger: { trigger: '.kpis', start: 'top 88%', once: true } });
-  gsap.from('.c-bar i', {
-    scaleX: 0, duration: 1.3, stagger: .07, ease: 'expo.out',
-    scrollTrigger: { trigger: '.chart', start: 'top 75%', once: true },
-  });
-  gsap.from('.c-bar b', { autoAlpha: 0, x: -10, duration: .6, stagger: .07, delay: .6, ease: 'power2.out', scrollTrigger: { trigger: '.chart', start: 'top 75%', once: true } });
-  gsap.from('.chart, .case__docs .doc', { y: 50, autoAlpha: 0, duration: 1.1, stagger: .08, ease: 'expo.out', scrollTrigger: { trigger: '.case', start: 'top 85%', once: true } });
+    gsap.fromTo($$('.kpi, .chart, .case__docs .doc, .case__ai', dlg), { y: 40, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, stagger: .07, delay: .15, ease: 'expo.out' });
+    gsap.fromTo($$('.c-bar i', dlg), { scaleX: 0 }, { scaleX: 1, duration: 1.3, stagger: .06, delay: .5, ease: 'expo.out' });
+    gsap.fromTo($$('.c-bar b', dlg), { autoAlpha: 0, x: -10 }, { autoAlpha: 1, x: 0, duration: .6, stagger: .06, delay: 1, ease: 'power2.out' });
+  };
 
   /* ---------------- Gallery: horizontal on desktop ---------------- */
   const mm = gsap.matchMedia();
