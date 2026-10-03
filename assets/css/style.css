@@ -232,7 +232,7 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; letter-s
   position: relative;
   min-height: 100svh;
   display: grid;
-  grid-template-columns: 1fr minmax(320px, min(38vw, 600px));
+  grid-template-columns: 1fr minmax(340px, min(46vw, 760px));
   align-items: center;
   gap: 4vw;
   padding: calc(var(--nav-h) + 30px) var(--gutter) 60px;
@@ -247,15 +247,16 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; letter-s
   pointer-events: none;
 }
 .hero__content { position: relative; z-index: 2; order: 1; }
-.hero__media { position: relative; order: 2; height: min(78svh, 820px); }
+.hero__media { position: relative; order: 2; aspect-ratio: 4 / 3; max-height: 78svh; }
 .hero__img {
   position: absolute; inset: 0;
   border-radius: var(--radius);
   overflow: hidden;
-  background: #FDFDFB; /* the photo's own white, so the frame has no visible seam */
+  background: var(--bg-3);
   box-shadow: 0 40px 100px rgba(0, 0, 0, .45);
 }
-.hero__img img { width: 100%; height: 100%; object-fit: contain; object-position: 50% 100%; transform-origin: 50% 100%; }
+/* 12% taller than the frame so the scroll parallax never reveals an edge */
+.hero__img img { position: absolute; left: 0; top: -6%; width: 100%; height: 112%; object-fit: cover; object-position: 50% 45%; transform-origin: 50% 50%; }
 
 .hero__title {
   font-family: var(--f-display); font-weight: 800; font-stretch: 62%;
@@ -295,10 +296,10 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; letter-s
 .chip svg { width: 20px; height: 20px; fill: none; stroke: var(--accent); stroke-width: 1.6; }
 .chip b { color: var(--ink); font-weight: 600; margin-right: 4px; }
 .chip--float { position: absolute; z-index: 3; }
-.chip--a { top: 12%; left: -11%; }
-.chip--b { bottom: 16%; right: -6%; }
+.chip--a { top: 10%; left: -9%; }
+.chip--b { bottom: -22px; right: 8%; }
 
-.spin { position: absolute; z-index: 3; left: -64px; bottom: 6%; width: 128px; height: 128px; display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: var(--accent-ink); }
+.spin { position: absolute; z-index: 3; left: -64px; bottom: -40px; width: 128px; height: 128px; display: grid; place-items: center; border-radius: 50%; background: var(--accent); color: var(--accent-ink); }
 .spin svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: spin 14s linear infinite; }
 .spin text { font-size: 10.5px; font-weight: 700; text-transform: uppercase; fill: currentColor; }
 .spin__arrow { font-size: 30px; line-height: 1; transition: transform .5s var(--ease); }
@@ -732,12 +733,12 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; letter-s
 @media (max-width: 960px) {
   :root { --nav-h: 68px; --radius: 18px; }
   .hero { grid-template-columns: 1fr; align-items: start; padding-top: calc(var(--nav-h) + 8px); padding-bottom: 72px; min-height: 0; gap: 30px; }
-  .hero__media { position: relative; inset: auto; height: min(62svh, 560px); order: 0; }
+  .hero__media { position: relative; inset: auto; height: auto; aspect-ratio: 4 / 3; max-height: none; order: 0; }
   .hero__content { padding-top: 0; }
   .hero__title { font-size: clamp(3rem, 16vw, 5rem); margin-bottom: 18px; }
   .hero__script { display: block; margin: 10px 0 0; vertical-align: 0; font-size: clamp(1.6rem, 7vw, 2.4rem); }
   .chip--float { display: none; } /* covered his face on small screens; the lead copy already says online & in person */
-  .spin { left: auto; right: 12px; bottom: 12px; top: auto; width: 92px; height: 92px; }
+  .spin { left: auto; right: 14px; bottom: -40px; top: auto; width: 88px; height: 88px; }
   .scroll-cue { display: none; }
 
   .about__grid, .method__grid, .faq__grid, .contact__grid, .case, .outcomes__grid { grid-template-columns: 1fr; }

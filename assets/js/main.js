@@ -373,7 +373,7 @@
     .add(() => intro.play(), '-=.65');
 
   /* ---------------- Hero scroll parallax ---------------- */
-  gsap.to($('img', heroImg), { yPercent: 12, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+  gsap.fromTo($('img', heroImg), { yPercent: -5 }, { yPercent: 5, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
   gsap.to('.hero__title', { yPercent: -18, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
 
   /* ---------------- Marquee: constant loop, eases faster while scrolling ---------------- */
