@@ -1,4 +1,4 @@
-/* Sadiq Ali — Athletisimo International */
+/* Athletisimo International */
 (() => {
   'use strict';
 
@@ -223,7 +223,7 @@
       f['goal'].closest('.field').classList.toggle('is-invalid', !goal);
       if (!name || !goal) { err.hidden = false; (name ? f['goal'] : f['name']).focus(); return; }
       err.hidden = true;
-      const text = `Hi Sadiq, I'm ${name}.\nI'm interested in: ${mode}\nMain goal: ${goal}` + (msg ? `\n\n${msg}` : '') + `\n\n(Sent from your website)`;
+      const text = `Hi, I'm ${name}.\nI'm interested in: ${mode}\nMain goal: ${goal}` + (msg ? `\n\n${msg}` : '') + `\n\n(Sent from your website)`;
       if (via === 'mail') {
         location.href = `mailto:${EMAIL}?subject=${encodeURIComponent('Free consultation: ' + name)}&body=${encodeURIComponent(text)}`;
       } else {

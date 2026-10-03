@@ -261,12 +261,13 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; letter-s
 .hero__title {
   font-family: var(--f-display); font-weight: 800; font-stretch: 62%;
   text-transform: uppercase;
-  font-size: clamp(3.4rem, 7vw, 7rem);
+  font-size: clamp(2.8rem, 4.9vw, 5.6rem);
   line-height: .9;
   letter-spacing: -.01em;
   margin: 0 0 26px -0.03em;
 }
-.hero__title .line { display: block; overflow: hidden; padding: .05em 0 .02em; }
+.hero__title .line { display: block; overflow: hidden; padding: .05em 0 .1em; }
+.hero__title em { color: var(--accent); font-size: 1.06em; line-height: .9; }
 .hero__title .word { display: inline-block; }
 .hero__script {
   display: inline-block;
@@ -735,10 +736,10 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; letter-s
   .hero { grid-template-columns: 1fr; align-items: start; padding-top: calc(var(--nav-h) + 8px); padding-bottom: 72px; min-height: 0; gap: 30px; }
   .hero__media { position: relative; inset: auto; height: auto; aspect-ratio: 4 / 3; max-height: none; order: 0; }
   .hero__content { padding-top: 0; }
-  .hero__title { font-size: clamp(3rem, 16vw, 5rem); margin-bottom: 18px; }
+  .hero__title { font-size: clamp(2.4rem, 12vw, 4rem); margin-bottom: 18px; }
   .hero__script { display: block; margin: 10px 0 0; vertical-align: 0; font-size: clamp(1.6rem, 7vw, 2.4rem); }
   .chip--float { display: none; } /* covered his face on small screens; the lead copy already says online & in person */
-  .spin { left: auto; right: 14px; bottom: -40px; top: auto; width: 88px; height: 88px; }
+  .spin { display: none; } /* covered faces in the photo; the WhatsApp CTA sits right below */
   .scroll-cue { display: none; }
 
   .about__grid, .method__grid, .faq__grid, .contact__grid, .case, .outcomes__grid { grid-template-columns: 1fr; }
@@ -753,7 +754,6 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; letter-s
 
 @media (max-width: 640px) {
   .nav__cta { display: none; }
-  .brand__text small { display: none; }
   .hero__ctas .btn { flex: 1 1 100%; }
   .pillars { grid-template-columns: 1fr; }
   .gains { grid-template-columns: 1fr; }
