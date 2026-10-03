@@ -343,10 +343,9 @@
   const counter = { v: 0 };
   const countEl = $('[data-count]');
   const intro = gsap.timeline({ paused: true });
-  const mobile = innerWidth <= 960;
 
   intro
-    .to(heroImg, { clipPath: mobile ? 'inset(0% 0% 0% 0% round 0px)' : 'inset(0% 0% 0% 0% round 22px)', duration: 1.4, ease: 'expo.inOut' }, 0)
+    .to(heroImg, { clipPath: `inset(0% 0% 0% 0% round ${getComputedStyle(heroImg).borderTopLeftRadius})`, duration: 1.4, ease: 'expo.inOut', clearProps: 'clipPath' }, 0)
     .to($('img', heroImg), { scale: 1, duration: 1.8, ease: 'expo.out' }, .2)
     .to(heroWords, { yPercent: 0, duration: 1.2, ease: 'expo.out', stagger: .1 }, .55)
     .to(heroFades, { autoAlpha: 1, y: 0, duration: 1, ease: 'power3.out', stagger: .08 }, .85)
