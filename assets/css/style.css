@@ -691,6 +691,8 @@ em { font-family: var(--f-serif); font-style: italic; font-weight: 400; letter-s
   user-select: none;
 }
 .footer__bottom { display: flex; justify-content: space-between; gap: 10px 20px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.credit a { font-weight: 600; color: var(--ink-2); letter-spacing: .01em; border-bottom: 1px solid var(--line-2); transition: color .3s, border-color .3s; }
+.credit a:hover { color: var(--accent); border-color: var(--accent); }
 
 /* ---------- FAB ---------- */
 .fab {
