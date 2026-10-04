@@ -153,17 +153,19 @@
 
   /* ---------------- Four-week outcomes chart ---------------- */
   const weeks = [
-    { w: 'Week 1', v: [0.5, 1, 1.2] },
-    { w: 'Week 2', v: [2.5, 2.7, 3.4] },
-    { w: 'Week 3', v: [8, 5, 7.3] },
-    { w: 'Week 4', v: [9, 7, 7.3] },
+    { w: 'Week 1', v: [2, 5, 5] },
+    { w: 'Week 2', v: [8, 11, 4] },
+    { w: 'Week 3', v: [15, 10, 9] },
+    { w: 'Week 4', v: [18, 14, 14] },
+    { w: 'Week 5', v: [22, 20, 16] },
   ];
-  const series = ['Energy', 'Strength', 'Endurance'];
+  const series = ['Strength', 'Endurance', 'HSSP'];
+  const WK_MAX = 25;
   const wk = $('[data-weeks]');
   if (wk) {
-    const grid = `<div class="wk__grid" aria-hidden="true">${[0, 2, 4, 6, 8, 10].map(t => `<span style="bottom:${t * 10}%"><b>${t}</b></span>`).join('')}</div>`;
+    const grid = `<div class="wk__grid" aria-hidden="true">${[0, 5, 10, 15, 20, 25].map(t => `<span style="bottom:${t / WK_MAX * 100}%"><b>${t}</b></span>`).join('')}</div>`;
     const groups = weeks.map((d, gi) => `<div class="wk__g" tabindex="0" data-i="${gi}" aria-label="${d.w}: ${series.map((n, i) => `${n} ${d.v[i]}`).join(', ')}">
-        <div class="wk__bars" aria-hidden="true">${d.v.map((v, i) => `<i class="wk__bar wk__bar--s${i + 1}" style="--h:${v * 10}%">${gi === weeks.length - 1 ? `<b>${v}</b>` : ''}</i>`).join('')}</div>
+        <div class="wk__bars" aria-hidden="true">${d.v.map((v, i) => `<i class="wk__bar wk__bar--s${i + 1}" style="--h:${v / WK_MAX * 100}%">${gi === weeks.length - 1 ? `<b>${v}</b>` : ''}</i>`).join('')}</div>
         <span class="wk__x" aria-hidden="true">${d.w}</span>
       </div>`).join('');
     wk.innerHTML = grid + `<div class="wk__groups">${groups}</div>`;
@@ -172,7 +174,7 @@
     const wTip = $('.chart__tip', fig);
     const show = (g) => {
       const d = weeks[g.dataset.i];
-      wTip.innerHTML = `<strong>${d.w}</strong>` + series.map((n, i) => `<div><span class="sw sw--s${i + 1}"></span><span>${n}</span><span>${d.v[i]} / 10</span></div>`).join('');
+      wTip.innerHTML = `<strong>${d.w}</strong>` + series.map((n, i) => `<div><span class="sw sw--s${i + 1}"></span><span>${n}</span><span>${d.v[i]} pts</span></div>`).join('');
       const f = fig.getBoundingClientRect(), r = g.getBoundingClientRect();
       const tw = wTip.offsetWidth || 190;
       wTip.style.left = Math.max(12, Math.min(r.left - f.left + r.width / 2 - tw / 2, f.width - tw - 12)) + 'px';
